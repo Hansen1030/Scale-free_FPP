@@ -1,0 +1,2 @@
+For each different parameter, add a new folder inside this folder. Record all the samples inside that folder.
+Also include a summary file each folder. 
