@@ -35,3 +35,34 @@ int Graph::find_shortest_path(int start_node, int target_node) {
 double Graph::weight_generator() {
     // TODO: generate node weight by the given parameter
 }
+
+double Graph::random_num_gen(int random_type, double random_index_1, double random_index_2)
+{
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        if (random_type == 0)
+        {
+                // uniform distribution
+                std::uniform_real_distribution<> distribution(random_index_1, random_index_2);
+                return distribution(gen);
+        }
+        else if (random_type == 1)
+        {
+                // normal distribution
+                std::normal_distribution<double> distribution(random_index_1, random_index_2);
+                return distribution(gen);
+        }
+        else if (random_type == 2)
+        {
+                // exponential distribution
+                std::exponential_distribution<> distribution(random_index_1);
+                return distribution(gen);
+        }
+        else if (random_type == 3)
+        {
+                // binomial distribution
+                std::binomial_distribution<> distribution(random_index_1, random_index_2);
+                return distribution(gen);
+        }
+        return -2;
+}

@@ -41,6 +41,8 @@ class Graph {
         */
         double weight_generator();
 
+        double random_num_gen(int random_type, double random_index_1, double random_index_2);
+
         // this matrix record the edge weight
         vector<vector<double>> edge_matrix;
 
