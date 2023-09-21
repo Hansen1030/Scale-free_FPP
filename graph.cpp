@@ -34,6 +34,8 @@ int Graph::find_shortest_path(int start_node, int target_node) {
 
 double Graph::weight_generator() {
     // TODO: generate node weight by the given parameter
+    double rand = random_num_gen(distribution_type, random_index_1, random_index_2);
+    return rand ^ (-gamma);
 }
 
 double Graph::random_num_gen(int random_type, double random_index_1, double random_index_2)
