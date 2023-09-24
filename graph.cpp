@@ -1,7 +1,10 @@
 #include "graph.h"
 #include <iostream>
 #include <algorithm>
-#include <cmath>
+#include <queue>
+#include <utility> 
+#include <limits>  
+using namespace std;
 
 Graph::Graph(int total_nodes, int alpha, int gamma, int distribution_type, double random_index_1, double random_index_2) {
     total_nodes = total_nodes;
@@ -22,6 +25,7 @@ Graph::Graph(int total_nodes, int alpha, int gamma, int distribution_type, doubl
     }
 
     for (int i = 0; i < total_nodes; i++) {
+        vector<double> temp;
         for (int j = i + 1; j < total_nodes; j++) {
             // TODO: assign each edge a weight by the given node weight
             double Omega = random_num_gen(2,1,1);
@@ -30,15 +34,48 @@ Graph::Graph(int total_nodes, int alpha, int gamma, int distribution_type, doubl
     }
 }
 
-int Graph::find_shortest_path(int start_node, int target_node) {
-    // TODO: find the shortest path and output to a file
-    return 0;
+vector<double> Graph::find_shortest_path(int start_node, int target_node) {
+    int n = edge_matrix.size();
+    vector<double> dist(n, numeric_limits<double>::max());
+    vector<int> prev(n, -1);
+    priority_queue<pair<double, int>, vector<pair<double, int>>, greater<pair<double, int>>> pq;
+
+    dist[start_node] = 0;
+    pq.push({0, start_node});
+
+    while (!pq.empty()) {
+        double current_dist = pq.top().first;
+        int current_node = pq.top().second;
+        pq.pop();
+
+        if (current_dist > dist[current_node]) continue;
+
+        for (int i = 0; i < n; ++i) {
+            double weight = edge_matrix[current_node][i];
+            if (weight < 0) continue; // Skip negative weights or non-edges
+
+            double new_dist = current_dist + weight;
+            if (new_dist < dist[i]) {
+                dist[i] = new_dist;
+                prev[i] = current_node;
+                pq.push({new_dist, i});
+            }
+        }
+    }
+    // Reconstruct the shortest path from start to end
+    vector<double> path;
+    for (int at = target_node; at != -1; at = prev[at]) {
+        path.push_back(at);
+    }
+    reverse(path.begin(), path.end());
+
+    return path;
 }
 
 double Graph::weight_generator() {
     // TODO: generate node weight by the given parameter
-    double rand = random_num_gen(0,0,1);
-    return std::pow(rand, -(1/gamma));
+    double rand = random_num_gen(distribution_type, random_index_1, random_index_2);
+    return pow(rand, (-gamma));
 }
 
 double Graph::random_num_gen(int random_type, double random_index_1, double random_index_2)
