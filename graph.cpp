@@ -6,13 +6,13 @@
 #include <limits>  
 using namespace std;
 
-Graph::Graph(int total_nodes, int alpha, int gamma, int distribution_type, double random_index_1, double random_index_2) {
-    total_nodes = total_nodes;
-    alpha = alpha;
-    gamma = gamma;
-    distribution_type = distribution_type;
-    random_index_1 = random_index_1;
-    random_index_2 = random_index_2;
+Graph::Graph(int total_nodes_, int alpha_, int gamma_, int distribution_type_, double random_index_1_, double random_index_2_) {
+    total_nodes = total_nodes_;
+    alpha = alpha_;
+    gamma = gamma_;
+    distribution_type = distribution_type_;
+    random_index_1 = random_index_1_;
+    random_index_2 = random_index_2_;
 
     node_array.resize(total_nodes);
     edge_matrix.resize(total_nodes);
@@ -28,13 +28,13 @@ Graph::Graph(int total_nodes, int alpha, int gamma, int distribution_type, doubl
         vector<double> temp;
         for (int j = i + 1; j < total_nodes; j++) {
             // TODO: assign each edge a weight by the given node weight
-            double Omega = random_num_gen(2,1,1);
-            edge_matrix[i][j] = (abs(i-j) ^ alpha) * Omega / (node_array[i] * node_array[j]);
+            double Omega = random_num_gen(distribution_type, random_index_1, random_index_2);
+            edge_matrix[i][j] = (double) (abs(i-j) ^ alpha) * Omega / (node_array[i] * node_array[j]);
         }
     }
 }
 
-vector<double> Graph::find_shortest_path(int start_node, int target_node) {
+int Graph::find_shortest_path(int start_node, int target_node) {
     int n = edge_matrix.size();
     vector<double> dist(n, numeric_limits<double>::max());
     vector<int> prev(n, -1);
@@ -69,7 +69,7 @@ vector<double> Graph::find_shortest_path(int start_node, int target_node) {
     }
     reverse(path.begin(), path.end());
 
-    return path;
+    return 0;
 }
 
 double Graph::weight_generator() {
