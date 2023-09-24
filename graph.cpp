@@ -1,6 +1,7 @@
 #include "graph.h"
 #include <iostream>
 #include <algorithm>
+#include <cmath>
 
 Graph::Graph(int total_nodes, int alpha, int gamma, int distribution_type, double random_index_1, double random_index_2) {
     total_nodes = total_nodes;
@@ -23,6 +24,8 @@ Graph::Graph(int total_nodes, int alpha, int gamma, int distribution_type, doubl
     for (int i = 0; i < total_nodes; i++) {
         for (int j = i + 1; j < total_nodes; j++) {
             // TODO: assign each edge a weight by the given node weight
+            double Omega = random_num_gen(2,1,1);
+            edge_matrix[i][j] = (abs(i-j) ^ alpha) * Omega / (node_array[i] * node_array[j]);
         }
     }
 }
@@ -34,8 +37,8 @@ int Graph::find_shortest_path(int start_node, int target_node) {
 
 double Graph::weight_generator() {
     // TODO: generate node weight by the given parameter
-    double rand = random_num_gen(distribution_type, random_index_1, random_index_2);
-    return rand ^ (-gamma);
+    double rand = random_num_gen(0,0,1);
+    return std::pow(rand, -(1/gamma));
 }
 
 double Graph::random_num_gen(int random_type, double random_index_1, double random_index_2)
