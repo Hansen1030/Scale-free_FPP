@@ -1,2 +1,0 @@
-This folder is for all exe file. 
-File in this folder will not be pushed. 
