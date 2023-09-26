@@ -22,7 +22,7 @@ class Graph {
         *  2     expnential                   mean                         \
         *  3      binomial                   times                    probability
         */ 
-        Graph(int total_nodes, int alpha, int gamma, int distribution_type, double random_index_1, double random_index_2);
+        Graph(int total_nodes, double alpha, double gamma, int distribution_type, double random_index_1, double random_index_2);
 
         /*
         * find the shortest path and output to a file
@@ -50,8 +50,8 @@ class Graph {
         vector<double> node_array;
         
         int total_nodes;
-        int alpha;
-        int gamma;
+        double alpha;
+        double gamma;
         int distribution_type;
         double random_index_1;
         double random_index_2;

@@ -6,7 +6,7 @@
 #include <limits>  
 using namespace std;
 
-Graph::Graph(int total_nodes_, int alpha_, int gamma_, int distribution_type_, double random_index_1_, double random_index_2_) {
+Graph::Graph(int total_nodes_, double alpha_, double gamma_, int distribution_type_, double random_index_1_, double random_index_2_) {
     total_nodes = total_nodes_;
     alpha = alpha_;
     gamma = gamma_;
@@ -29,7 +29,7 @@ Graph::Graph(int total_nodes_, int alpha_, int gamma_, int distribution_type_, d
         for (int j = i + 1; j < total_nodes; j++) {
             // TODO: assign each edge a weight by the given node weight
             double Omega = random_num_gen(2, 1, 1);
-            edge_matrix[i][j] = (double) std::pow(abs(i-j),alpha) * Omega / (node_array[i] * node_array[j]);
+            edge_matrix[i][j] = (double) std::pow((double) abs(i-j),alpha) * Omega / (node_array[i] * node_array[j]);
             // edge_matrix[j][i] = edge_matrix[i][j];
         }
     }
@@ -94,7 +94,7 @@ int Graph::find_shortest_path(int start_node, int target_node) {
 double Graph::weight_generator() {
     // TODO: generate node weight by the given parameter
     double rand = random_num_gen(distribution_type, random_index_1, random_index_2);
-    return pow(rand, (-1/gamma));
+    return pow(rand, (-1.0/gamma));
 }
 
 double Graph::random_num_gen(int random_type, double random_index_1, double random_index_2)

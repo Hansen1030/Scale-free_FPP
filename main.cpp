@@ -25,11 +25,11 @@ int main(int argc, char* argv[]) {
     //     std::cout<<tem;
     // }
     if (argc != 10) {
-        std::cout << "please type the input as int start_node, int target_node, int total_nodes, int alpha, int gamma, int distribution_type, double random_index_1, double random_index_2, int sample_size" << std::endl;
+        std::cout << "please type the input as int start_node, int target_node, int total_nodes, double alpha, double gamma, int distribution_type, double random_index_1, double random_index_2, int sample_size" << std::endl;
         return 1;
     }
     for (int i = 0; i < std::stoi(argv[9]); i++) {
-        Graph* g = new Graph(std::stoi(argv[3]), std::stoi(argv[4]), std::stoi(argv[5]), std::stoi(argv[6]), std::stoi(argv[7]), std::stoi(argv[8]));
+        Graph* g = new Graph(std::stoi(argv[3]), std::stod(argv[4]), std::stod(argv[5]), std::stoi(argv[6]), std::stoi(argv[7]), std::stoi(argv[8]));
         g->find_shortest_path(std::stoi(argv[1]), std::stoi(argv[2]));
     }
     
