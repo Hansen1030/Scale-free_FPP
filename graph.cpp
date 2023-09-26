@@ -22,6 +22,7 @@ Graph::Graph(int total_nodes_, double alpha_, double gamma_, int distribution_ty
 
     for (int i = 0; i < total_nodes; i++) {
         node_array[i] = weight_generator();
+
     }
 
     for (int i = 0; i < total_nodes; i++) {
@@ -30,18 +31,18 @@ Graph::Graph(int total_nodes_, double alpha_, double gamma_, int distribution_ty
             // TODO: assign each edge a weight by the given node weight
             double Omega = random_num_gen(2, 1, 1);
             edge_matrix[i][j] = (double) std::pow((double) abs(i-j),alpha) * Omega / (node_array[i] * node_array[j]);
-            // edge_matrix[j][i] = edge_matrix[i][j];
+            edge_matrix[j][i] = edge_matrix[i][j];
         }
     }
 }
 
 int Graph::find_shortest_path(int start_node, int target_node) {
-    // for (int i = 0; i < edge_matrix.size(); i++) {
-    //     for (int j = 0; j < edge_matrix[i].size(); j++) {
-    //         std::cout << edge_matrix[i][j] << " ";
-    //     }
-    //     std::cout << std::endl;
-    // }
+    for (int i = 0; i < edge_matrix.size(); i++) {
+        for (int j = 0; j < edge_matrix[i].size(); j++) {
+            std::cout << edge_matrix[i][j] << " ";
+        }
+        std::cout << std::endl;
+    }
     int n = edge_matrix.size();
     vector<double> dist(n, numeric_limits<double>::max());
     vector<int> prev(n, -1);
@@ -74,17 +75,12 @@ int Graph::find_shortest_path(int start_node, int target_node) {
     for (int at = target_node; at != -1; at = prev[at]) {
         path.push_back(at);
     }
+
     reverse(path.begin(), path.end());
-    // for (int i = 0; i < path.size(); i++) {
-    //     std::cout << path[i] << std::endl;
-    // }
     int row=path[0];
     double answer = 0;
-    for(int i=0;i<path.size();i++){
-        if(i==0){
-            continue;
-        }
-        answer += edge_matrix[std::min(row, path[i])][std::max(row, path[i])];
+    for(int i=1;i<path.size();i++){
+        answer += edge_matrix[row][path[i]];
         row = path[i];
     }
     std::cout << answer << std::endl;
