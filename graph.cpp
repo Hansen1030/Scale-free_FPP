@@ -28,13 +28,20 @@ Graph::Graph(int total_nodes_, int alpha_, int gamma_, int distribution_type_, d
         vector<double> temp;
         for (int j = i + 1; j < total_nodes; j++) {
             // TODO: assign each edge a weight by the given node weight
-            double Omega = random_num_gen(distribution_type, random_index_1, random_index_2);
-            edge_matrix[i][j] = (double) (abs(i-j) ^ alpha) * Omega / (node_array[i] * node_array[j]);
+            double Omega = random_num_gen(2, 1, 1);
+            edge_matrix[i][j] = (double) std::pow(abs(i-j),alpha) * Omega / (node_array[i] * node_array[j]);
+            // edge_matrix[j][i] = edge_matrix[i][j];
         }
     }
 }
 
 int Graph::find_shortest_path(int start_node, int target_node) {
+    // for (int i = 0; i < edge_matrix.size(); i++) {
+    //     for (int j = 0; j < edge_matrix[i].size(); j++) {
+    //         std::cout << edge_matrix[i][j] << " ";
+    //     }
+    //     std::cout << std::endl;
+    // }
     int n = edge_matrix.size();
     vector<double> dist(n, numeric_limits<double>::max());
     vector<int> prev(n, -1);
@@ -63,12 +70,24 @@ int Graph::find_shortest_path(int start_node, int target_node) {
         }
     }
     // Reconstruct the shortest path from start to end
-    vector<double> path;
+    vector<int> path;
     for (int at = target_node; at != -1; at = prev[at]) {
         path.push_back(at);
     }
     reverse(path.begin(), path.end());
-
+    // for (int i = 0; i < path.size(); i++) {
+    //     std::cout << path[i] << std::endl;
+    // }
+    int row=path[0];
+    double answer = 0;
+    for(int i=0;i<path.size();i++){
+        if(i==0){
+            continue;
+        }
+        answer += edge_matrix[std::min(row, path[i])][std::max(row, path[i])];
+        row = path[i];
+    }
+    std::cout << answer << std::endl;
     return 0;
 }
 
