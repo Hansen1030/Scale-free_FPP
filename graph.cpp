@@ -4,6 +4,7 @@
 #include <queue>
 #include <utility> 
 #include <limits>  
+#include <fstream>
 using namespace std;
 
 Graph::Graph(int total_nodes_, double alpha_, double gamma_, int distribution_type_, double random_index_1_, double random_index_2_) {
@@ -77,7 +78,16 @@ int Graph::find_shortest_path(int start_node, int target_node) {
         answer += edge_matrix[row][path[i]];
         row = path[i];
     }
-    std::cout << answer << " ";
+    std::ofstream outfile;
+    string filename = "./data/" + std::to_string(alpha) + "_" + std::to_string(gamma) + "_" + std::to_string(n);
+    outfile.open(filename, std::ios::app);  // Open in append mode
+
+    if (outfile.is_open()) {
+        outfile << answer << "\n";  // Write the double value and a newline
+        outfile.close();  // Close the file
+    } else {
+        std::cerr << "Unable to open the file: " << filename << std::endl;
+    }
     return 0;
 }
 
@@ -117,3 +127,4 @@ double Graph::random_num_gen(int random_type, double random_index_1, double rand
         }
         return -2;
 }
+
