@@ -33,6 +33,8 @@ class Graph {
         */
         int find_shortest_path(int start_node, int target_node);
 
+        void writeDoubleToCSV(const std::string& filename, double value);
+
     private:
         /*
         * generate w_i

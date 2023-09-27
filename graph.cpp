@@ -123,3 +123,17 @@ double Graph::random_num_gen(int random_type, double random_index_1, double rand
         }
         return -2;
 }
+
+#include <fstream>
+
+void Graph::writeDoubleToCSV(const std::string& filename, double value) {
+    std::ofstream outfile;
+    outfile.open(filename, std::ios::app);  // Open in append mode
+
+    if (outfile.is_open()) {
+        outfile << value << "\n";  // Write the double value and a newline
+        outfile.close();  // Close the file
+    } else {
+        std::cerr << "Unable to open the file: " << filename << std::endl;
+    }
+}
