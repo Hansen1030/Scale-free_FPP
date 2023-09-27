@@ -37,12 +37,6 @@ Graph::Graph(int total_nodes_, double alpha_, double gamma_, int distribution_ty
 }
 
 int Graph::find_shortest_path(int start_node, int target_node) {
-    for (int i = 0; i < edge_matrix.size(); i++) {
-        for (int j = 0; j < edge_matrix[i].size(); j++) {
-            std::cout << edge_matrix[i][j] << " ";
-        }
-        std::cout << std::endl;
-    }
     int n = edge_matrix.size();
     vector<double> dist(n, numeric_limits<double>::max());
     vector<int> prev(n, -1);
@@ -83,7 +77,7 @@ int Graph::find_shortest_path(int start_node, int target_node) {
         answer += edge_matrix[row][path[i]];
         row = path[i];
     }
-    std::cout << answer << std::endl;
+    std::cout << answer << " ";
     return 0;
 }
 
