@@ -128,3 +128,10 @@ double Graph::random_num_gen(int random_type, double random_index_1, double rand
         return -2;
 }
 
+Graph::~Graph() {
+    node_array.clear();
+    for (auto v : edge_matrix) {
+        v.clear();
+    }
+    edge_matrix.clear();
+}

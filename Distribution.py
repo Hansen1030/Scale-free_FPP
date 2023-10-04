@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 # Load the entire file into a Pandas Series
-file_path="Scale-free_FPP-main/data/3.500000_3.000000_1999"
+file_path="Scale-free_FPP-main/data/3.500000_3.000000_5000"
 data_series = pd.read_csv(file_path, header=None, squeeze=True)
 
 # Plotting the histogram

@@ -33,6 +33,8 @@ class Graph {
         */
         int find_shortest_path(int start_node, int target_node);
 
+        ~Graph();
+
     private:
         /*
         * generate w_i
