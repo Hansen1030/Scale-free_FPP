@@ -22,7 +22,7 @@ class Graph {
         *  2     expnential                   mean                         \
         *  3      binomial                   times                    probability
         */ 
-        Graph(int total_nodes, double alpha, double gamma, int distribution_type, double random_index_1, double random_index_2);
+        Graph(int total_nodes,int start_node, int target_node, double alpha, double gamma, int distribution_type, double random_index_1, double random_index_2, int t_);
 
         /*
         * find the shortest path and output to a file
@@ -31,10 +31,15 @@ class Graph {
         * 
         * output: 0 if run succesful, 1 otherwise
         */
-        int find_shortest_path(int start_node, int target_node);
+        double find_shortest_path();
+        double bidirectional_dijkstra();
+        // This function tranformed the node, and consited the new position of starting point and ending point
+        void node_transform_defult();
+        void node_transform_equation();
+        void node_transform_setting(int n);
+        void write_in_file(double answer);
 
         ~Graph();
-
     private:
         /*
         * generate w_i
@@ -50,11 +55,16 @@ class Graph {
 
         // this array record the w of each node
         vector<double> node_array;
+
+        double findKthLargest(int t);
         
         int total_nodes;
+        int start_node;
+        int target_node;
         double alpha;
         double gamma;
         int distribution_type;
         double random_index_1;
         double random_index_2;
+        int t;
 };
