@@ -35,9 +35,11 @@ class Graph {
         double bidirectional_dijkstra();
         // This function tranformed the node, and consited the new position of starting point and ending point
         void node_transform_defult();
-        void node_transform_equation();
-        void node_transform_setting(int n);
+        void node_transform_equation(int k);
+        void node_transform_Omega(int n, int k);
         void write_in_file(double answer);
+
+        void test();//test function
 
         ~Graph();
     private:

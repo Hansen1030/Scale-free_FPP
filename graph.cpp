@@ -18,31 +18,29 @@ Graph::Graph(int total_nodes_, int start, int target,double alpha_, double gamma
     random_index_1 = random_index_1_;
     random_index_2 = random_index_2_;
     t = t_;
-    // node_transform_defult(); //generate the node by default 
-    // node_transform_equation(); // generate the node by equation 
-    // node_transform_setting(n); //generate the node by number of node 
+    node_transform_defult(); //generate the node by default 
+    // node_transform_equation(8); // generate the node by equation k=8
+    // node_transform_Omega(10,8); //generate the node by number of node with n= 10 and k=8
+    // test();
 }
 
 void Graph::node_transform_defult(){
-    int k=16;
-    double threshold = pow(k,1/gamma);
     node_array.resize(total_nodes);
-    // cout<<"height weight node: "<<endl;
     for (int i = 0; i < total_nodes; i++) {
         node_array[i] = weight_generator();
-        if(node_array[i]>threshold){
-            // cout<<i<<": "<<node_array[i]<<endl;
-        }
     }
     edge_matrix.resize(total_nodes);
     for (int i = 0; i < edge_matrix.size(); i++) {
         edge_matrix[i].resize(total_nodes);
     }
+    double Omega=0;
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::exponential_distribution<> d(1.0);
     for (int i = 0; i < total_nodes; i++) {
-        vector<double> temp;
         for (int j = i + 1; j < total_nodes; j++) {
             // TODO: assign each edge a weight by the given node weight
-            double Omega = random_num_gen(2, 1, 1);
+            Omega = d(gen);
             edge_matrix[i][j] = (double) std::pow((double) abs(i-j),alpha) * Omega / (node_array[i] * node_array[j]);
             // cout<<edge_matrix[i][j]<<" ";
             edge_matrix[j][i] = edge_matrix[i][j];
@@ -51,14 +49,13 @@ void Graph::node_transform_defult(){
     }
 }
 
-void Graph::node_transform_equation(){
+void Graph::node_transform_equation(int k){
     vector<int> original_index;
     vector<double> temp;
     temp.resize(total_nodes);
     for (int i = 0; i < total_nodes; i++) {
         temp[i] = weight_generator();
     }
-    int k=2;
     double threshold = pow(k,1/gamma);
     // cout<<"node: "<<total_nodes<<" alpha:"<<alpha<<" gamma: "<<gamma<<endl;
     // cout<<"threshold:"<<threshold<<endl;
@@ -74,7 +71,6 @@ void Graph::node_transform_equation(){
             target_node = node_array.size()-1;
         }
         if(temp[i]>threshold &&i!=start_node && i!=target_node){
-
             original_index.push_back(i);
             node_array.push_back(temp[i]);
         }
@@ -105,6 +101,160 @@ void Graph::node_transform_equation(){
         }
     }
 }
+
+void Graph::test(){
+    double Omega=0;
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::exponential_distribution<> d(1.0);
+    for(auto i=0;i<total_nodes;i++){
+        for(auto j=0;j<total_nodes;j++){
+            Omega = d(gen);
+        }
+        cout<<Omega<<endl;
+    }
+    cout<<"test Omega:"<<Omega<<endl;
+}
+
+bool unique(vector<int> original_index, int index){
+    for(auto i:original_index){
+        if(i==index) return false;
+    }
+    return true;
+}
+
+void Graph::node_transform_Omega(int n, int k){
+    double threshold = pow(k,1/gamma);
+    double threshold_Omega = 4/(total_nodes*total_nodes);
+    vector<int> original_index;
+    node_array.resize(total_nodes); 
+    for (int i = 0; i < total_nodes; i++) {
+        node_array[i] = weight_generator();
+        // store the node index which the weight overed the threshold
+        if(node_array[i]>threshold){
+            original_index.push_back(i);
+        }
+    }
+    if(unique(original_index,start_node)){
+        original_index.push_back(start_node);
+    }
+    if(unique(original_index,target_node)){
+        original_index.push_back(target_node);
+    }
+
+    cout<<"node after shrink: "<<original_index.size()<<endl;
+    vector<vector<double>> temp_matrix;
+    temp_matrix.resize(total_nodes);
+    for (int i = 0; i < temp_matrix.size(); i++) {
+        temp_matrix[i].resize(total_nodes);
+    }
+    // Priority queue to keep track of n smallest Omega values
+    priority_queue<pair<double, pair<int, int>>> pq;
+
+    for (int i = 0; i < total_nodes; i++) {
+        vector<double> temp;
+        for (int j = i + 1; j < total_nodes; j++) {
+            // TODO: assign each edge a weight by the given node weight
+            double Omega = random_num_gen(2, 1, 1);
+            temp_matrix[i][j] = (double) std::pow((double) abs(i-j),alpha) * Omega / (node_array[i] * node_array[j]);
+            temp_matrix[j][i] = temp_matrix[i][j];
+            //add the smallest n Omega values to the priority queue
+            if(Omega>threshold_Omega){
+                continue;
+            }
+            pq.push({Omega, {i, j}});
+            if (pq.size() > n) {
+                pq.pop(); // Remove the largest
+            }
+        }
+    }
+    cout<<"Omega size: "<<pq.size()<<endl;
+    // store the index which the Omega value is the smallest n
+    while(pq.size()>0){
+        pair<double, pair<int, int>> temp = pq.top();
+        pq.pop();
+        if(unique(original_index,temp.second.first)){
+            original_index.push_back(temp.second.first);
+        }
+        if(unique(original_index,temp.second.second)){
+            original_index.push_back(temp.second.second);
+        }
+    }
+    cout<<"total node after added omega: "<<original_index.size()<<endl;
+    std::sort(original_index.begin(), original_index.end());
+
+    start_node=find(original_index.begin(), original_index.end(), start_node) - original_index.begin();
+    target_node=find(original_index.begin(), original_index.end(), target_node) - original_index.begin();
+
+    edge_matrix.resize(original_index.size());
+    for (int i = 0; i < edge_matrix.size(); i++) {
+        edge_matrix[i].resize(original_index.size());
+    }
+    for (int i = 0; i < original_index.size(); i++) {
+        vector<double> temp;
+        for (int j = i + 1; j < original_index.size(); j++) {
+            edge_matrix[i][j]= temp_matrix[original_index[i]][original_index[j]];
+            edge_matrix[j][i] = edge_matrix[i][j];
+        }
+    }
+}
+
+// bool unique(vector<int> original_index, int index){
+//     return std::find(original_index.begin(), original_index.end(), index) == original_index.end();
+// }
+
+// void Graph::node_transform_Omega(int n, int k){
+//     double threshold = pow(k, 1 / gamma);
+    
+//     // Generate node weights and find nodes that are above the threshold
+//     vector<int> original_index;
+//     node_array.resize(total_nodes);
+//     for (int i = 0; i < total_nodes; ++i) {
+//         node_array[i] = weight_generator();
+//         if (node_array[i] > threshold) {
+//             original_index.push_back(i);
+//         }
+//     }
+    
+//     // Add start_node and target_node if they're unique
+//     if (unique(original_index, start_node)) original_index.push_back(start_node);
+//     if (unique(original_index, target_node)) original_index.push_back(target_node);
+    
+//     // Initialize temp_matrix and priority_queue for storing Omega values
+//     vector<vector<double>> temp_matrix(total_nodes, vector<double>(total_nodes));
+//     priority_queue<pair<double, pair<int, int>>> pq;
+    
+//     // Calculate Omega values and populate priority queue
+//     for (int i = 0; i < total_nodes; ++i) {
+//         for (int j = i + 1; j < total_nodes; ++j) {
+//             double Omega = random_num_gen(2, 1, 1);
+//             temp_matrix[i][j] = pow(abs(i - j), alpha) * Omega / (node_array[i] * node_array[j]);
+//             temp_matrix[j][i] = temp_matrix[i][j];
+//             pq.push({Omega, {i, j}});
+//             if (pq.size() > n) pq.pop();
+//         }
+//     }
+    
+//     // Add indices related to the n smallest Omega values
+//     while (!pq.empty()) {
+//         auto temp = pq.top(); pq.pop();
+//         if (unique(original_index, temp.second.first)) original_index.push_back(temp.second.first);
+//         if (unique(original_index, temp.second.second)) original_index.push_back(temp.second.second);
+//     }
+    
+//     // Sort original indices and update edge_matrix
+//     sort(original_index.begin(), original_index.end());
+//     start_node = std::find(original_index.begin(), original_index.end(), start_node) - original_index.begin();
+//     target_node = std::find(original_index.begin(), original_index.end(), target_node) - original_index.begin();
+//     edge_matrix.resize(original_index.size(), vector<double>(original_index.size()));
+    
+//     for (int i = 0; i < original_index.size(); ++i) {
+//         for (int j = i + 1; j < original_index.size(); ++j) {
+//             edge_matrix[i][j] = temp_matrix[original_index[i]][original_index[j]];
+//             edge_matrix[j][i] = edge_matrix[i][j];
+//         }
+//     }
+// }
 
 
 
@@ -146,18 +296,18 @@ double Graph::find_shortest_path() {
         path.push_back(at);
     }
     reverse(path.begin(), path.end());
-    cout<<"path, weight, and cost: "<<endl;
-    int count=0;
-    for(auto i:path){
-        cout<<i<<": "<<node_array[i]<<", ";
-        if(count==0){
-            count++;
-            cout<<endl;
-            continue;
-        }
-        cout<<edge_matrix[path[count-1]][i]<<endl;
-        count++;
-    }
+    // cout<<"path, weight, and cost: "<<endl;
+    // int count=0;
+    // for(auto i:path){
+    //     cout<<i<<": "<<node_array[i]<<", ";
+    //     if(count==0){
+    //         count++;
+    //         cout<<endl;
+    //         continue;
+    //     }
+    //     cout<<edge_matrix[path[count-1]][i]<<endl;
+    //     count++;
+    // }
     return current_dist;
 }
 
