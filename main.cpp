@@ -12,7 +12,8 @@ int main(int argc, char* argv[]) {
     for (int i = 0; i < std::stoi(argv[9]); i++) {
         
         Graph* g = new Graph(std::stoi(argv[3]),std::stoi(argv[1]),std::stoi(argv[2]), std::stod(argv[4]), std::stod(argv[5]), std::stoi(argv[6]), std::stoi(argv[7]), std::stoi(argv[8]), std::stoi(argv[9]));
-        g->write_in_file(g->find_shortest_path());
+        g->find_shortest_path(true);
+
         delete g;
     }
     auto end_time = std::chrono::high_resolution_clock::now();

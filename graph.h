@@ -31,14 +31,14 @@ class Graph {
         * 
         * output: 0 if run succesful, 1 otherwise
         */
-        double find_shortest_path();
+        double find_shortest_path(bool road =false);
         double bidirectional_dijkstra();
         // This function tranformed the node, and consited the new position of starting point and ending point
         void node_transform_defult();
         void node_transform_equation(int k);
         void node_transform_Omega(int n, int k);
         void write_in_file(double answer);
-
+        void write_in_file_path(vector<int> path);
         void test();//test function
 
         ~Graph();

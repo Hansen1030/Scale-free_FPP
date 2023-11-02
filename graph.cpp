@@ -260,7 +260,7 @@ void Graph::node_transform_Omega(int n, int k){
 
 
 
-double Graph::find_shortest_path() {
+double Graph::find_shortest_path(bool road) {
     int n = edge_matrix.size();
     vector<double> dist(n, numeric_limits<double>::max());
     vector<int> prev(n, -1);
@@ -296,18 +296,11 @@ double Graph::find_shortest_path() {
         path.push_back(at);
     }
     reverse(path.begin(), path.end());
-    // cout<<"path, weight, and cost: "<<endl;
-    // int count=0;
-    // for(auto i:path){
-    //     cout<<i<<": "<<node_array[i]<<", ";
-    //     if(count==0){
-    //         count++;
-    //         cout<<endl;
-    //         continue;
-    //     }
-    //     cout<<edge_matrix[path[count-1]][i]<<endl;
-    //     count++;
-    // }
+    if(road){
+        write_in_file_path(path);
+    }else{
+        write_in_file(current_dist);
+    }
     return current_dist;
 }
 
@@ -405,6 +398,23 @@ void Graph::write_in_file(double answer){
     if (outfile.is_open()) {
         outfile << answer << "\n";  // Write the double value and a newline
         outfile.close();  // Close the file
+    } else {
+        std::cerr << "Unable to open the file: " << filename << std::endl;
+    }
+}
+//-------------------------------------------------- spliting rule
+void Graph::write_in_file_path(vector<int> path){
+    std::ofstream outfile;
+    string filename = "./path/" + std::to_string(alpha) + "_" + std::to_string(gamma) + "_" + std::to_string(total_nodes);
+    outfile.open(filename, std::ios::app);  // Open in append mode
+
+    if (outfile.is_open()) {
+        for(auto i=1;i<path.size();i++){
+            auto weight=edge_matrix[path[i-1]][path[i]];
+            outfile << path[i-1] <<" "<<path[i]<<" "<<weight<<"\n";
+        }
+        outfile<<"--------------------------------------------------\n";
+        outfile.close();
     } else {
         std::cerr << "Unable to open the file: " << filename << std::endl;
     }
