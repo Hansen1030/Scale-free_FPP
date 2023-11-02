@@ -410,8 +410,9 @@ void Graph::write_in_file_path(vector<int> path){
 
     if (outfile.is_open()) {
         for(auto i=1;i<path.size();i++){
-            auto weight=edge_matrix[path[i-1]][path[i]];
-            outfile << path[i-1] <<" "<<path[i]<<" "<<weight<<"\n";
+            auto weight_l=node_array[i-1];
+            auto weight_r=node_array[i];
+            outfile << path[i-1] <<" "<<path[i]<<" "<<weight_l<<" "<<weight_r<<"\n";
         }
         outfile<<"--------------------------------------------------\n";
         outfile.close();
