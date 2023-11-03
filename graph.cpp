@@ -18,13 +18,21 @@ Graph::Graph(int total_nodes_, int start, int target,double alpha_, double gamma
     random_index_1 = random_index_1_;
     random_index_2 = random_index_2_;
     t = t_;
-    node_transform_defult(); //generate the node by default 
-    // node_transform_equation(8); // generate the node by equation k=8
-    // node_transform_Omega(10,8); //generate the node by number of node with n= 10 and k=8
+    if (t == 0) {
+        node_transform_defult(); //generate the node by default
+    } else if (t == 1) {
+        node_transform_equation(8); // generate the node by equation k=8
+        // node_transform_Omega(10,8); //generate the node by number of node with n= 10 and k=8
+    } else if (t == 2) {
+        // do nothing
+    }
+     
+    
     // test();
 }
 
 void Graph::node_transform_defult(){
+
     node_array.resize(total_nodes);
     for (int i = 0; i < total_nodes; i++) {
         node_array[i] = weight_generator();
@@ -101,6 +109,8 @@ void Graph::node_transform_equation(int k){
         }
     }
 }
+
+
 
 void Graph::test(){
     double Omega=0;
@@ -256,7 +266,52 @@ void Graph::node_transform_Omega(int n, int k){
 //     }
 // }
 
-
+double Graph::greedy_alg_poly(bool road) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::exponential_distribution<> d(1.0);
+    int b = 3;
+    node_array.resize(total_nodes);
+    for (int i = 0; i < total_nodes; i++) {
+        node_array[i] = weight_generator();
+    }
+    int power = 1;
+    int total_time = 0;
+    int last = start_node;
+    while(pow(b,power++) < (total_nodes / b)){
+        int pos = 0;
+        double largest = 0;
+        for (int i = start_node; i < pow(b,power); i++) {
+            if (node_array[i] > largest) {
+                largest = node_array[i];
+                pos = i;
+            }
+        }
+        if (pos == last) continue;
+        double Omega = d(gen);
+        total_time += (double) std::pow((double) abs(pos - last),alpha) * Omega / (node_array[pos] * node_array[last]);
+        last = pos;
+        std::cout << "power: " << power << " " << "position: " << pos << " Time now: " << total_time << std::endl;
+    }
+    while(power--) {
+        int pos = 0;
+        double largest = 0;
+        for (int i = (target_node - pow(b,power)); i <= target_node; i++) {
+            if (node_array[i] > largest) {
+                largest = node_array[i];
+                pos = i;
+            }
+        }
+        if (pos == last) continue;
+        double Omega = d(gen);
+        total_time += (double) std::pow((double) abs(pos - last),alpha) * Omega / (node_array[pos] * node_array[last]);
+        last = pos;
+        std::cout << "power: " << power << " " << "position: " << pos << " Time now: " << total_time << std::endl;
+    }
+    double Omega = d(gen);
+    total_time += (double) std::pow((double) abs(last - target_node),alpha) * Omega / (node_array[target_node] * node_array[last]);
+    return total_time;
+}
 
 
 

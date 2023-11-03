@@ -32,6 +32,7 @@ class Graph {
         * output: 0 if run succesful, 1 otherwise
         */
         double find_shortest_path(bool road =false);
+        double greedy_alg_poly(bool road =false);
         double bidirectional_dijkstra();
         // This function tranformed the node, and consited the new position of starting point and ending point
         void node_transform_defult();
