@@ -275,13 +275,15 @@ double Graph::greedy_alg_poly(bool road) {
     for (int i = 0; i < total_nodes; i++) {
         node_array[i] = weight_generator();
     }
-    int power = 1;
+    int power = 0;
     int total_time = 0;
     int last = start_node;
-    while(pow(b,power++) < (total_nodes / b)){
+    while(pow(b,power) < (total_nodes / b)){
+        // std::cout << pow(b, power) << " " << (total_nodes / b) << endl;
+        power++;
         int pos = 0;
         double largest = 0;
-        for (int i = start_node; i < pow(b,power); i++) {
+        for (int i = start_node; i < start_node + pow(b,power); i++) {
             if (node_array[i] > largest) {
                 largest = node_array[i];
                 pos = i;
