@@ -12,12 +12,12 @@ int main(int argc, char* argv[]) {
     for (int i = 0; i < std::stoi(argv[9]); i++) {
     
         Graph* g = new Graph(std::stoi(argv[3]),std::stoi(argv[1]),std::stoi(argv[2]), std::stod(argv[4]), std::stod(argv[5]), std::stoi(argv[6]), std::stoi(argv[7]), std::stoi(argv[8]), std::stoi(argv[10]));
-        if (std::stoi(argv[10]) == 2) {
-            double time = g->greedy_alg_poly(true);
-            std::cout << "time: " << time << std::endl;
-        } else {
-            g->find_shortest_path(true);
-        }
+        // if (std::stoi(argv[10]) == 2) {
+        //     double time = g->greedy_alg_poly(true);
+        //     std::cout << "time: " << time << std::endl;
+        // } else {
+        //     g->find_shortest_path(true);
+        // }
        
 
         delete g;
@@ -25,6 +25,6 @@ int main(int argc, char* argv[]) {
     
     auto end_time = std::chrono::high_resolution_clock::now();
     auto elapsed_time = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
-    std::cout << "Elapsed time: " << elapsed_time << " milliseconds" << std::endl;
+    // std::cout << "Elapsed time: " << elapsed_time << " milliseconds" << std::endl;
     return 0;
 }

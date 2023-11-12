@@ -6,6 +6,7 @@
 #include <limits>  
 #include <fstream>
 #include <unordered_map>
+#include <stdlib.h>
 using namespace std;
 
 Graph::Graph(int total_nodes_, int start, int target,double alpha_, double gamma_, int distribution_type_, double random_index_1_, double random_index_2_, int t_) {
@@ -18,13 +19,17 @@ Graph::Graph(int total_nodes_, int start, int target,double alpha_, double gamma
     random_index_1 = random_index_1_;
     random_index_2 = random_index_2_;
     t = t_;
-    if (t == 0) {
-        node_transform_defult(); //generate the node by default
-    } else if (t == 1) {
-        node_transform_equation(8); // generate the node by equation k=8
-        // node_transform_Omega(10,8); //generate the node by number of node with n= 10 and k=8
-    } else if (t == 2) {
-        // do nothing
+    // if (t == 0) {
+    //     node_transform_defult(); //generate the node by default
+    // } else if (t == 1) {
+    //     node_transform_equation(8); // generate the node by equation k=8
+    //     // node_transform_Omega(10,8); //generate the node by number of node with n= 10 and k=8
+    // } else if (t == 2) {
+    //     // do nothing
+    // }
+    vector<double> output = line_scan(3, 3);
+    for (int i = 0; i < 3; i++) {
+        cout << output[0] << endl;
     }
      
     
@@ -521,4 +526,75 @@ Graph::~Graph() {
         v.clear();
     }
     edge_matrix.clear();
+}
+
+vector<double> Graph::line_scan(int parts, int nodes_num) {
+    node_array.resize(total_nodes);
+    for (int i = 0; i<total_nodes;i++) {
+        node_array[i] = weight_generator();
+    }
+    vector<double> output;
+    output.resize(3);
+    vector<pair<int, double>> begin;
+    vector<pair<int, double>> end;
+    begin.resize(nodes_num);
+    end.resize(nodes_num);
+    for (int i = 0; i < (node_array.size() / parts); i++) {
+        pair<int, double> prev;
+        for (int j = 0; j < nodes_num; j++) {
+            if (begin[j].second <= node_array[i]) {
+                prev = begin[j];
+                begin[j].first = i;
+                begin[j].second = node_array[i];
+                for (int k = j + 1; k < nodes_num; k++) {
+                    pair<int, double> mem = begin[k];
+                    begin[k] = prev;
+                    prev = mem;
+                }
+                break;
+            }
+        }
+    }
+    for (int i = (node_array.size() * (parts - 1) / parts); i < node_array.size(); i++) {
+        pair<int, double> prev;
+        for (int j = 0; j < nodes_num; j++) {
+            if (end[j].second <= node_array[i]) {
+                prev = end[j];
+                end[j].first = i;
+                end[j].second = node_array[i];
+                for (int k = j + 1; k < nodes_num; k++) {
+                    pair<int, double> mem = end[k];
+                    end[k] = prev;
+                    prev = mem;
+                }
+                break;
+            }
+        }
+    }
+    // for (int i = 0; i < parts; i++) {
+    //     cout << begin[i].first << endl;
+    // }
+    // for (int i = 0; i < parts; i++) {
+    //     cout << end[i].first << endl;
+    // }
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::exponential_distribution<> d(1.0);
+    output[2] = 9999.9;
+    for (int i = 0; i < begin.size(); i++) {
+        for (int j = 0; j < end.size(); j++) {
+            double omega = d(gen);
+            double length = (double) std::pow((double) abs(begin[i].first-end[j].first),alpha) * omega / (begin[i].second * end[j].second);
+            if (length < output[2]) {
+                output[0] = (double) begin[i].first;
+                output[1] = (double) end[j].first;
+                output[2] = length;
+                cout << output[2] << endl;
+            }
+        }
+    }
+    // for (int i = 0; i < 3; i++) {
+    //     cout << output[0] << endl;
+    // }
+    return output;
 }

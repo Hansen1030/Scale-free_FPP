@@ -41,6 +41,7 @@ class Graph {
         void write_in_file(double answer);
         void write_in_file_path(vector<int> path);
         void test();//test function
+        vector<double> line_scan(int parts, int nodes_num);
 
         ~Graph();
     private:
