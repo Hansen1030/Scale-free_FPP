@@ -2,7 +2,6 @@
 #include <iostream>
 #include <chrono>
 
-// rewrite a main function which use GPU 
 int main() {
     auto start_time = std::chrono::high_resolution_clock::now();
     int start_node = 2000;

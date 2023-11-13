@@ -8,6 +8,9 @@
 #include <unordered_map>
 #include <stdlib.h>
 using namespace std;
+// random setting
+std::random_device rd;
+std::mt19937 gen(rd());
 
 Graph::Graph(int total_nodes_, int start, int target,double alpha_, double gamma_, int distribution_type_, double random_index_1_, double random_index_2_) {
     total_nodes = total_nodes_;
@@ -156,8 +159,6 @@ void Graph::node_transform_equation(int k){
 
 void Graph::test(){
     double Omega=0;
-    std::random_device rd;
-    std::mt19937 gen(rd());
     std::exponential_distribution<> d(1.0);
     for(auto i=0;i<total_nodes;i++){
         for(auto j=0;j<total_nodes;j++){
@@ -253,8 +254,7 @@ void Graph::node_transform_Omega(int n, int k){
 
 
 double Graph::greedy_alg_poly(bool road) {
-    std::random_device rd;
-    std::mt19937 gen(rd());
+
     std::exponential_distribution<> d(1.0);
     int b = 3;
     node_array.resize(total_nodes);
@@ -480,11 +480,8 @@ double Graph::weight_generator() {
     double rand = random_num_gen(distribution_type, random_index_1, random_index_2);
     return pow(rand, (-1.0/gamma));
 }
-
 double Graph::random_num_gen(int random_type, double random_index_1, double random_index_2)
 {
-        std::random_device rd;
-        std::mt19937 gen(rd());
         if (random_type == 0)
         {
                 // uniform distribution
@@ -514,10 +511,18 @@ double Graph::random_num_gen(int random_type, double random_index_1, double rand
 
 Graph::~Graph() {
     node_array.clear();
+    for (auto v: edge_matrix_1){
+        v.clear();
+    }
+    for (auto v: edge_matrix_2){
+        v.clear();
+    }
     for (auto v : edge_matrix) {
         v.clear();
     }
     edge_matrix.clear();
+    edge_matrix_1.clear();
+    edge_matrix_2.clear();
 }
 
 vector<double> Graph::line_scan(int parts, int nodes_num) {
@@ -602,8 +607,6 @@ void Graph::generate_new_matrix(int parts) {
         edge_matrix_1[i].resize(n_nodes);
     }
     double Omega = 0;
-    std::random_device rd;
-    std::mt19937 gen(rd());
     std::exponential_distribution<> d(1.0);
     for (int i = 0; i < n_nodes; i++) {
         for (int j = i + 1; j < n_nodes; j++) {
