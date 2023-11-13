@@ -19,9 +19,6 @@ Graph::Graph(int total_nodes_, int start, int target,double alpha_, double gamma
     random_index_1 = random_index_1_;
     random_index_2 = random_index_2_;
     vector<double> output = line_scan(3, 3);
-    for (int i = 0; i < 3; i++) {
-        cout << output[i] << endl;
-    }
      
 }
 void Graph::generate_output(int algorithm, bool path) {
@@ -40,11 +37,8 @@ void Graph::generate_output(int algorithm, bool path) {
         case 2:{// two direction
             int parts=3;
             int num_nodes=3;
-            cout<<"generate_new_matrix?"<<endl;
             generate_new_matrix(parts);
-            cout<<"line scan?"<<endl;
             vector<double> index= line_scan(parts,num_nodes);
-            cout<<"seg?"<<endl;
             int gap = (parts-1)*(node_array.size()/parts);
             answer = find_shortest_path(index[0], int(index[0])+(node_array.size()/parts), path, &edge_matrix_1);
             vector<double> answer_rest = find_shortest_path(int(index[1])-gap, index[1], path, &edge_matrix_2);
@@ -450,9 +444,7 @@ void Graph::write_in_file_path(vector<double> path){
 
     if (outfile.is_open()) {
         for(auto i=1;i<path.size();i++){
-            auto weight_l=node_array[i-1];
-            auto weight_r=node_array[i];
-            outfile << path[i-1] <<" "<<path[i]<<" "<<weight_l<<" "<<weight_r<<"\n";
+            outfile << path[i-1] <<" "<<path[i]<<" "<<edge_matrix[path[i-1]][path[i]]<<"\n";
         }
         outfile.close();
     } else {
