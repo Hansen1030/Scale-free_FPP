@@ -5,9 +5,9 @@
 // rewrite a main function which use GPU 
 int main() {
     auto start_time = std::chrono::high_resolution_clock::now();
-    int start_node = 100;
-    int target_node = 300;
-    int total_nodes = 500;
+    int start_node = 2000;
+    int target_node = 8000;
+    int total_nodes = 10000;
     double alpha = 3;
     double gamma = 0.8;
     int distribution_type = 0;

@@ -50,6 +50,8 @@ class Graph {
         // write in file function
         void write_in_file(double answer);
         void write_in_file_path(vector<double> path);
+        // overwrite
+        void write_in_file_path(vector<double> path, vector<double> cost);
 
         ~Graph();
     private:

@@ -23,12 +23,13 @@ Graph::Graph(int total_nodes_, int start, int target,double alpha_, double gamma
 }
 void Graph::generate_output(int algorithm, bool path) {
     vector<double> answer;
+    vector<double> cost;
     switch(algorithm){
         case 0:{// default
             node_transform_defult();
             answer=find_shortest_path(start_node,target_node,path,&edge_matrix);
-        }
             break;
+        }
         case 1:{// height weight
             node_transform_equation(8);
             answer=find_shortest_path(start_node,target_node,path,&edge_matrix);
@@ -39,20 +40,28 @@ void Graph::generate_output(int algorithm, bool path) {
             int num_nodes=3;
             generate_new_matrix(parts);
             vector<double> index= line_scan(parts,num_nodes);
+
             int gap = (parts-1)*(node_array.size()/parts);
-            answer = find_shortest_path(index[0], int(index[0])+(node_array.size()/parts), path, &edge_matrix_1);
-            vector<double> answer_rest = find_shortest_path(int(index[1])-gap, index[1], path, &edge_matrix_2);
+            answer = find_shortest_path(start_node, int(index[0]), path, &edge_matrix_1);
+            vector<double> answer_rest = find_shortest_path(int(index[1]-gap),target_node-gap, path, &edge_matrix_2);
+            // if cost return cost
             if(!path){
                 answer[0]+=answer_rest[0]+index[2];
                 break;
             }
-            for (auto i : answer_rest) {
-                i+=gap;
-                answer.push_back(i);
+            //extract the cost from the path
+            for(auto i=1;i<answer.size();i++){
+                cost.push_back((edge_matrix_1)[answer[i-1]][answer[i]]);
             }
-            if(!path) answer.push_back(index[2]);
-
-            break;
+            cost.push_back(index[2]);
+            for(auto i=1;i<answer_rest.size();i++){
+                cost.push_back((edge_matrix_1)[answer_rest[i-1]][answer_rest[i]]);
+            }
+            for(auto i:answer_rest){
+                answer.push_back(i+gap);
+            }
+            write_in_file_path(answer,cost);
+            return ;
         }
         default:
             node_transform_defult();
@@ -296,13 +305,14 @@ double Graph::greedy_alg_poly(bool road) {
 
 
 
-vector<double> Graph::find_shortest_path(int start, int target, bool road, vector<vector<double>>* edge_matrix) {
-    int n = edge_matrix->size();
+vector<double> Graph::find_shortest_path(int start, int target, bool road, vector<vector<double>>* matrix) {
+    int n = matrix->size();
     vector<double> dist(n, numeric_limits<double>::max());
     vector<int> prev(n, -1);
     priority_queue<pair<double, int>, vector<pair<double, int>>, greater<pair<double, int>>> pq;
+
     dist[start] = 0;
-    pq.push({0, target});
+    pq.push({0, start});
     double current_dist=0;
     while (!pq.empty()) {
         current_dist = pq.top().first;
@@ -314,7 +324,7 @@ vector<double> Graph::find_shortest_path(int start, int target, bool road, vecto
         if (current_dist > dist[current_node]) continue;
 
         for (int i = 0; i < n; ++i) {
-            double weight = (*edge_matrix)[current_node][i];
+            double weight = (*matrix)[current_node][i];
             if (weight < 0) continue; // Skip negative weights or non-edges
 
             double new_dist = current_dist + weight;
@@ -329,7 +339,11 @@ vector<double> Graph::find_shortest_path(int start, int target, bool road, vecto
     vector<double> path;
 
     for (int at = target; at != -1; at = prev[at]) {
+        cout<<at<<endl;
         path.push_back(at);
+    }
+    for(auto i:path){
+        cout<<i<<endl;
     }
     reverse(path.begin(), path.end());
     if(road){
@@ -445,6 +459,20 @@ void Graph::write_in_file_path(vector<double> path){
     if (outfile.is_open()) {
         for(auto i=1;i<path.size();i++){
             outfile << path[i-1] <<" "<<path[i]<<" "<<edge_matrix[path[i-1]][path[i]]<<"\n";
+        }
+        outfile.close();
+    } else {
+        std::cerr << "Unable to open the file: " << filename << std::endl;
+    }
+}
+void Graph::write_in_file_path(vector<double> path,vector<double> cost){
+    std::ofstream outfile;
+    string filename = "./path/" + std::to_string(alpha) + "_" + std::to_string(gamma) + "_" + std::to_string(total_nodes);
+    outfile.open(filename, std::ios::app);  // Open in append mode
+
+    if (outfile.is_open()) {
+        for(auto i=1;i<path.size();i++){
+            outfile << path[i-1] <<" "<<path[i]<<" "<<cost[i]<<"\n";
         }
         outfile.close();
     } else {
