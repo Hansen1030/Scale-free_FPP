@@ -18,9 +18,8 @@ Graph::Graph(int total_nodes_, int start, int target,double alpha_, double gamma
     distribution_type = distribution_type_;
     random_index_1 = random_index_1_;
     random_index_2 = random_index_2_;
-    vector<double> output = line_scan(3, 3);
-     
 }
+
 void Graph::generate_output(int algorithm, bool path) {
     vector<double> answer;
     vector<double> cost;
@@ -40,7 +39,6 @@ void Graph::generate_output(int algorithm, bool path) {
             int num_nodes=3;
             generate_new_matrix(parts);
             vector<double> index= line_scan(parts,num_nodes);
-
             int gap = (parts-1)*(node_array.size()/parts);
             answer = find_shortest_path(start_node, int(index[0]), path, &edge_matrix_1);
             vector<double> answer_rest = find_shortest_path(int(index[1]-gap),target_node-gap, path, &edge_matrix_2);
@@ -337,13 +335,8 @@ vector<double> Graph::find_shortest_path(int start, int target, bool road, vecto
     }
     // Reconstruct the shortest path from start to end
     vector<double> path;
-
     for (int at = target; at != -1; at = prev[at]) {
-        cout<<at<<endl;
         path.push_back(at);
-    }
-    for(auto i:path){
-        cout<<i<<endl;
     }
     reverse(path.begin(), path.end());
     if(road){
@@ -460,6 +453,7 @@ void Graph::write_in_file_path(vector<double> path){
         for(auto i=1;i<path.size();i++){
             outfile << path[i-1] <<" "<<path[i]<<" "<<edge_matrix[path[i-1]][path[i]]<<"\n";
         }
+        outfile <<'\n';
         outfile.close();
     } else {
         std::cerr << "Unable to open the file: " << filename << std::endl;
@@ -474,6 +468,7 @@ void Graph::write_in_file_path(vector<double> path,vector<double> cost){
         for(auto i=1;i<path.size();i++){
             outfile << path[i-1] <<" "<<path[i]<<" "<<cost[i]<<"\n";
         }
+        outfile <<'\n';
         outfile.close();
     } else {
         std::cerr << "Unable to open the file: " << filename << std::endl;
