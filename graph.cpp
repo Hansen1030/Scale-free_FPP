@@ -9,7 +9,7 @@
 #include <stdlib.h>
 using namespace std;
 
-Graph::Graph(int total_nodes_, int start, int target,double alpha_, double gamma_, int distribution_type_, double random_index_1_, double random_index_2_, int t_) {
+Graph::Graph(int total_nodes_, int start, int target,double alpha_, double gamma_, int distribution_type_, double random_index_1_, double random_index_2_) {
     total_nodes = total_nodes_;
     start_node=start;
     target_node=target;
@@ -18,23 +18,57 @@ Graph::Graph(int total_nodes_, int start, int target,double alpha_, double gamma
     distribution_type = distribution_type_;
     random_index_1 = random_index_1_;
     random_index_2 = random_index_2_;
-    t = t_;
-    // if (t == 0) {
-    //     node_transform_defult(); //generate the node by default
-    // } else if (t == 1) {
-    //     node_transform_equation(8); // generate the node by equation k=8
-    //     // node_transform_Omega(10,8); //generate the node by number of node with n= 10 and k=8
-    // } else if (t == 2) {
-    //     // do nothing
-    // }
     vector<double> output = line_scan(3, 3);
     for (int i = 0; i < 3; i++) {
-        cout << output[0] << endl;
+        cout << output[i] << endl;
     }
      
-    
-    // test();
 }
+void Graph::generate_output(int algorithm, bool path) {
+    vector<double> answer;
+    switch(algorithm){
+        case 0:{// default
+            node_transform_defult();
+            answer=find_shortest_path(start_node,target_node,path,&edge_matrix);
+        }
+            break;
+        case 1:{// height weight
+            node_transform_equation(8);
+            answer=find_shortest_path(start_node,target_node,path,&edge_matrix);
+            break;
+        }
+        case 2:{// two direction
+            int parts=3;
+            int num_nodes=3;
+            generate_new_matrix(parts);
+            vector<double> index= line_scan(parts,num_nodes);
+
+            int gap = (parts-1)*(node_array.size()/parts);
+            answer = find_shortest_path(index[0], int(index[0])+(node_array.size()/3), path, &edge_matrix_1);
+            vector<double> answer_rest = find_shortest_path(int(index[1])-gap, index[1], path, &edge_matrix_2);
+            if(!path){
+                answer[0]+=answer_rest[0]+index[2];
+                break;
+            }
+            for (auto i : answer_rest) {
+                i+=gap;
+                answer.push_back(i);
+            }
+            if(!path) answer.push_back(index[2]);
+
+            break;
+        }
+        default:
+            node_transform_defult();
+            break;
+    }
+    if(path){
+        write_in_file_path(answer);
+    }else{
+        write_in_file(answer[0]);
+    }
+}
+
 
 void Graph::node_transform_defult(){
 
@@ -214,62 +248,6 @@ void Graph::node_transform_Omega(int n, int k){
     }
 }
 
-// bool unique(vector<int> original_index, int index){
-//     return std::find(original_index.begin(), original_index.end(), index) == original_index.end();
-// }
-
-// void Graph::node_transform_Omega(int n, int k){
-//     double threshold = pow(k, 1 / gamma);
-    
-//     // Generate node weights and find nodes that are above the threshold
-//     vector<int> original_index;
-//     node_array.resize(total_nodes);
-//     for (int i = 0; i < total_nodes; ++i) {
-//         node_array[i] = weight_generator();
-//         if (node_array[i] > threshold) {
-//             original_index.push_back(i);
-//         }
-//     }
-    
-//     // Add start_node and target_node if they're unique
-//     if (unique(original_index, start_node)) original_index.push_back(start_node);
-//     if (unique(original_index, target_node)) original_index.push_back(target_node);
-    
-//     // Initialize temp_matrix and priority_queue for storing Omega values
-//     vector<vector<double>> temp_matrix(total_nodes, vector<double>(total_nodes));
-//     priority_queue<pair<double, pair<int, int>>> pq;
-    
-//     // Calculate Omega values and populate priority queue
-//     for (int i = 0; i < total_nodes; ++i) {
-//         for (int j = i + 1; j < total_nodes; ++j) {
-//             double Omega = random_num_gen(2, 1, 1);
-//             temp_matrix[i][j] = pow(abs(i - j), alpha) * Omega / (node_array[i] * node_array[j]);
-//             temp_matrix[j][i] = temp_matrix[i][j];
-//             pq.push({Omega, {i, j}});
-//             if (pq.size() > n) pq.pop();
-//         }
-//     }
-    
-//     // Add indices related to the n smallest Omega values
-//     while (!pq.empty()) {
-//         auto temp = pq.top(); pq.pop();
-//         if (unique(original_index, temp.second.first)) original_index.push_back(temp.second.first);
-//         if (unique(original_index, temp.second.second)) original_index.push_back(temp.second.second);
-//     }
-    
-//     // Sort original indices and update edge_matrix
-//     sort(original_index.begin(), original_index.end());
-//     start_node = std::find(original_index.begin(), original_index.end(), start_node) - original_index.begin();
-//     target_node = std::find(original_index.begin(), original_index.end(), target_node) - original_index.begin();
-//     edge_matrix.resize(original_index.size(), vector<double>(original_index.size()));
-    
-//     for (int i = 0; i < original_index.size(); ++i) {
-//         for (int j = i + 1; j < original_index.size(); ++j) {
-//             edge_matrix[i][j] = temp_matrix[original_index[i]][original_index[j]];
-//             edge_matrix[j][i] = edge_matrix[i][j];
-//         }
-//     }
-// }
 
 double Graph::greedy_alg_poly(bool road) {
     std::random_device rd;
@@ -322,26 +300,25 @@ double Graph::greedy_alg_poly(bool road) {
 
 
 
-double Graph::find_shortest_path(bool road) {
-    int n = edge_matrix.size();
+vector<double> Graph::find_shortest_path(int start, int target, bool road, vector<vector<double>>* edge_matrix) {
+    int n = edge_matrix->size();
     vector<double> dist(n, numeric_limits<double>::max());
     vector<int> prev(n, -1);
     priority_queue<pair<double, int>, vector<pair<double, int>>, greater<pair<double, int>>> pq;
-
-    dist[start_node] = 0;
-    pq.push({0, start_node});
+    dist[start] = 0;
+    pq.push({0, target});
     double current_dist=0;
     while (!pq.empty()) {
         current_dist = pq.top().first;
         int current_node = pq.top().second;
         pq.pop();
-        if (current_node == target_node) {
+        if (current_node == target) {
             break;
         }
         if (current_dist > dist[current_node]) continue;
 
         for (int i = 0; i < n; ++i) {
-            double weight = edge_matrix[current_node][i];
+            double weight = (*edge_matrix)[current_node][i];
             if (weight < 0) continue; // Skip negative weights or non-edges
 
             double new_dist = current_dist + weight;
@@ -353,17 +330,16 @@ double Graph::find_shortest_path(bool road) {
         }
     }
     // Reconstruct the shortest path from start to end
-    vector<int> path;
-    for (int at = target_node; at != -1; at = prev[at]) {
+    vector<double> path;
+
+    for (int at = target; at != -1; at = prev[at]) {
         path.push_back(at);
     }
     reverse(path.begin(), path.end());
     if(road){
-        write_in_file_path(path);
-    }else{
-        write_in_file(current_dist);
+        return path;   
     }
-    return current_dist;
+    return vector<double>{current_dist};
 }
 
 double Graph::bidirectional_dijkstra() {
@@ -465,7 +441,7 @@ void Graph::write_in_file(double answer){
     }
 }
 //-------------------------------------------------- spliting rule
-void Graph::write_in_file_path(vector<int> path){
+void Graph::write_in_file_path(vector<double> path){
     std::ofstream outfile;
     string filename = "./path/" + std::to_string(alpha) + "_" + std::to_string(gamma) + "_" + std::to_string(total_nodes);
     outfile.open(filename, std::ios::app);  // Open in append mode
@@ -476,7 +452,6 @@ void Graph::write_in_file_path(vector<int> path){
             auto weight_r=node_array[i];
             outfile << path[i-1] <<" "<<path[i]<<" "<<weight_l<<" "<<weight_r<<"\n";
         }
-        outfile<<"--------------------------------------------------\n";
         outfile.close();
     } else {
         std::cerr << "Unable to open the file: " << filename << std::endl;
@@ -589,7 +564,7 @@ vector<double> Graph::line_scan(int parts, int nodes_num) {
                 output[0] = (double) begin[i].first;
                 output[1] = (double) end[j].first;
                 output[2] = length;
-                cout << output[2] << endl;
+                // cout << output[2] << endl;
             }
         }
     }
@@ -597,4 +572,42 @@ vector<double> Graph::line_scan(int parts, int nodes_num) {
     //     cout << output[0] << endl;
     // }
     return output;
+}
+
+void Graph::generate_new_matrix(int parts) {
+    node_array.resize(total_nodes);
+    for (int i = 0; i < total_nodes; i++) {
+        node_array[i] = weight_generator();
+    }
+    int n_nodes = total_nodes / parts;
+        edge_matrix_1.resize(n_nodes);
+    for (int i = 0; i < edge_matrix_1.size(); i++) {
+        edge_matrix_1[i].resize(n_nodes);
+    }
+    double Omega = 0;
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::exponential_distribution<> d(1.0);
+    for (int i = 0; i < n_nodes; i++) {
+        for (int j = i + 1; j < n_nodes; j++) {
+            // TODO: assign each edge a weight by the given node weight
+            Omega = d(gen);
+            edge_matrix_1[i][j] = (double)std::pow((double)abs(i - j), alpha) * Omega / (node_array[i] * node_array[j]);
+            // cout<<edge_matrix[i][j]<<" ";
+            edge_matrix[j][i] = edge_matrix[i][j];
+        }
+    }
+    edge_matrix_2.resize(n_nodes);
+    for (int i = 0; i < edge_matrix_2.size(); i++) {
+        edge_matrix_2[i].resize(n_nodes);
+    }
+    for (int i = 0; i < n_nodes; i++) {
+        for (int j = i + 1; j < n_nodes; j++) {
+            // TODO: assign each edge a weight by the given node weight
+            Omega = d(gen);
+            edge_matrix_2[i][j] = (double)std::pow((double)abs(i - j), alpha) * Omega / (node_array[i + (parts - 1) * n_nodes] * node_array[j + (parts - 1) * n_nodes]);
+            // cout<<edge_matrix[i][j]<<" ";
+            edge_matrix_2[j][i] = edge_matrix[i][j];
+        }
+    }
 }
