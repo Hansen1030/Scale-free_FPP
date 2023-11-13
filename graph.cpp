@@ -40,11 +40,13 @@ void Graph::generate_output(int algorithm, bool path) {
         case 2:{// two direction
             int parts=3;
             int num_nodes=3;
+            cout<<"generate_new_matrix?"<<endl;
             generate_new_matrix(parts);
+            cout<<"line scan?"<<endl;
             vector<double> index= line_scan(parts,num_nodes);
-
+            cout<<"seg?"<<endl;
             int gap = (parts-1)*(node_array.size()/parts);
-            answer = find_shortest_path(index[0], int(index[0])+(node_array.size()/3), path, &edge_matrix_1);
+            answer = find_shortest_path(index[0], int(index[0])+(node_array.size()/parts), path, &edge_matrix_1);
             vector<double> answer_rest = find_shortest_path(int(index[1])-gap, index[1], path, &edge_matrix_2);
             if(!path){
                 answer[0]+=answer_rest[0]+index[2];
@@ -594,9 +596,10 @@ void Graph::generate_new_matrix(int parts) {
             Omega = d(gen);
             edge_matrix_1[i][j] = (double)std::pow((double)abs(i - j), alpha) * Omega / (node_array[i] * node_array[j]);
             // cout<<edge_matrix[i][j]<<" ";
-            edge_matrix[j][i] = edge_matrix[i][j];
+            edge_matrix_1[j][i] = edge_matrix_1[i][j];
         }
     }
+
     edge_matrix_2.resize(n_nodes);
     for (int i = 0; i < edge_matrix_2.size(); i++) {
         edge_matrix_2[i].resize(n_nodes);
@@ -607,7 +610,7 @@ void Graph::generate_new_matrix(int parts) {
             Omega = d(gen);
             edge_matrix_2[i][j] = (double)std::pow((double)abs(i - j), alpha) * Omega / (node_array[i + (parts - 1) * n_nodes] * node_array[j + (parts - 1) * n_nodes]);
             // cout<<edge_matrix[i][j]<<" ";
-            edge_matrix_2[j][i] = edge_matrix[i][j];
+            edge_matrix_2[j][i] = edge_matrix_2[i][j];
         }
     }
 }
