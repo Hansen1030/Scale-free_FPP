@@ -13,6 +13,7 @@ using namespace std;
 std::random_device rd;
 std::mt19937 gen(rd());
 
+
 Graph::Graph(int total_nodes_, int start, int target,double alpha_, double gamma_, int distribution_type_, double random_index_1_, double random_index_2_) {
     total_nodes = total_nodes_;
     start_node=start;
@@ -23,8 +24,9 @@ Graph::Graph(int total_nodes_, int start, int target,double alpha_, double gamma
     random_index_1 = random_index_1_;
     random_index_2 = random_index_2_;
     node_array.resize(total_nodes);
+    std::uniform_real_distribution<> uni(random_index_1, random_index_2);
     for (int i = 0; i < total_nodes; i++) {
-        node_array[i] = weight_generator();
+        node_array[i]=pow(uni(gen), (-1.0/gamma));
     }
 }
 
@@ -87,8 +89,6 @@ void Graph::node_transform_defult(){
         edge_matrix[i].resize(total_nodes);
     }
     double Omega=0;
-    std::random_device rd;
-    std::mt19937 gen(rd());
     std::exponential_distribution<> d(1.0);
     for (int i = 0; i < total_nodes; i++) {
         for (int j = i + 1; j < total_nodes; j++) {
@@ -461,7 +461,7 @@ void Graph::write_in_file_path(vector<double> path,vector<double> cost){
 
     if (outfile.is_open()) {
         for(auto i=1;i<path.size();i++){
-            outfile << path[i-1] <<" "<<path[i]<<" "<<cost[i]<<"\n";
+            outfile << path[i-1] <<" "<<path[i]<<" "<<cost[i-1]<<"\n";
         }
         outfile <<'\n';
         outfile.close();
@@ -471,7 +471,6 @@ void Graph::write_in_file_path(vector<double> path,vector<double> cost){
 }
 
 double Graph::weight_generator() {
-    // TODO: generate node weight by the given parameter
     double rand = random_num_gen(distribution_type, random_index_1, random_index_2);
     return pow(rand, (-1.0/gamma));
 }
