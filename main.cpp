@@ -12,7 +12,7 @@ int main() {
     int distribution_type = 0;
     double random_index_1 = 0;
     double random_index_2 = 1;
-    int sample_size = 5;
+    int sample_size = 1;
     /*
     choose the algorithm:
     0: default
@@ -31,7 +31,7 @@ int main() {
     }
     
     auto end_time = std::chrono::high_resolution_clock::now();
-    auto elapsed_time = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count()*1000;
+    auto elapsed_time = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count()/1000;
     std::cout << "Elapsed time: " << elapsed_time << " milliseconds" << std::endl;
     return 0;
 }
