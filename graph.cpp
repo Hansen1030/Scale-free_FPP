@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <stdlib.h>
 using namespace std;
+
 // random setting
 std::random_device rd;
 std::mt19937 gen(rd());
@@ -21,6 +22,10 @@ Graph::Graph(int total_nodes_, int start, int target,double alpha_, double gamma
     distribution_type = distribution_type_;
     random_index_1 = random_index_1_;
     random_index_2 = random_index_2_;
+    node_array.resize(total_nodes);
+    for (int i = 0; i < total_nodes; i++) {
+        node_array[i] = weight_generator();
+    }
 }
 
 void Graph::generate_output(int algorithm, bool path) {
@@ -56,7 +61,7 @@ void Graph::generate_output(int algorithm, bool path) {
             }
             cost.push_back(index[2]);
             for(auto i=1;i<answer_rest.size();i++){
-                cost.push_back((edge_matrix_1)[answer_rest[i-1]][answer_rest[i]]);
+                cost.push_back((edge_matrix_2)[answer_rest[i-1]][answer_rest[i]]);
             }
             for(auto i:answer_rest){
                 answer.push_back(i+gap);
@@ -77,11 +82,6 @@ void Graph::generate_output(int algorithm, bool path) {
 
 
 void Graph::node_transform_defult(){
-
-    node_array.resize(total_nodes);
-    for (int i = 0; i < total_nodes; i++) {
-        node_array[i] = weight_generator();
-    }
     edge_matrix.resize(total_nodes);
     for (int i = 0; i < edge_matrix.size(); i++) {
         edge_matrix[i].resize(total_nodes);
@@ -254,13 +254,8 @@ void Graph::node_transform_Omega(int n, int k){
 
 
 double Graph::greedy_alg_poly(bool road) {
-
     std::exponential_distribution<> d(1.0);
     int b = 3;
-    node_array.resize(total_nodes);
-    for (int i = 0; i < total_nodes; i++) {
-        node_array[i] = weight_generator();
-    }
     int power = 0;
     int total_time = 0;
     int last = start_node;
@@ -526,10 +521,6 @@ Graph::~Graph() {
 }
 
 vector<double> Graph::line_scan(int parts, int nodes_num) {
-    node_array.resize(total_nodes);
-    for (int i = 0; i<total_nodes;i++) {
-        node_array[i] = weight_generator();
-    }
     vector<double> output;
     output.resize(3);
     vector<pair<int, double>> begin;
@@ -597,10 +588,6 @@ vector<double> Graph::line_scan(int parts, int nodes_num) {
 }
 
 void Graph::generate_new_matrix(int parts) {
-    node_array.resize(total_nodes);
-    for (int i = 0; i < total_nodes; i++) {
-        node_array[i] = weight_generator();
-    }
     int n_nodes = total_nodes / parts;
         edge_matrix_1.resize(n_nodes);
     for (int i = 0; i < edge_matrix_1.size(); i++) {
