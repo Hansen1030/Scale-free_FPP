@@ -31,7 +31,7 @@ int main() {
     }
     
     auto end_time = std::chrono::high_resolution_clock::now();
-    auto elapsed_time = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count()/1000;
+    auto elapsed_time = std::chrono::duration_cast<std::chrono::seconds>(end_time - start_time).count()
     std::cout << "Elapsed time: " << elapsed_time << " milliseconds" << std::endl;
     return 0;
 }
