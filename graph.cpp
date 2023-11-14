@@ -78,7 +78,7 @@ void Graph::generate_output(int algorithm, bool path) {
     if(path){
         write_in_file_path(answer);
     }else{
-        write_in_file(answer[0]);
+        write_in_file(answer[0],algorithm);
     }
 }
 
@@ -426,9 +426,10 @@ double Graph::bidirectional_dijkstra() {
 }
 
 
-void Graph::write_in_file(double answer){
+void Graph::write_in_file(double answer, int algorithm){
     std::ofstream outfile;
-    string filename = "./data_new/" + std::to_string(alpha) + "_" + std::to_string(gamma) + "_" + std::to_string(total_nodes);
+    string folder=algorithm==0?"./data_new/":"./greedy/";
+    string filename = folder + std::to_string(alpha) + "_" + std::to_string(gamma) + "_" + std::to_string(total_nodes);
     outfile.open(filename, std::ios::app);  // Open in append mode
 
     if (outfile.is_open()) {
@@ -438,6 +439,7 @@ void Graph::write_in_file(double answer){
         std::cerr << "Unable to open the file: " << filename << std::endl;
     }
 }
+
 //-------------------------------------------------- spliting rule
 void Graph::write_in_file_path(vector<double> path){
     std::ofstream outfile;

@@ -48,7 +48,7 @@ class Graph {
         double greedy_alg_poly(bool road =false);
         double bidirectional_dijkstra();
         // write in file function
-        void write_in_file(double answer);
+        void write_in_file(double answer, int algorithm);
         void write_in_file_path(vector<double> path);
         // overwrite
         void write_in_file_path(vector<double> path, vector<double> cost);

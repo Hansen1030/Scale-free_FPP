@@ -22,7 +22,7 @@ int main() {
    int algorithm = 2;
 
    //genetrate path or cost:
-   bool path = true;
+   bool path = false;
 
     for (int i = 0; i < sample_size; i++) {
         Graph* g = new Graph(total_nodes, start_node, target_node, alpha, gamma, distribution_type, random_index_1, random_index_2);
