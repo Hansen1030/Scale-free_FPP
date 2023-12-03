@@ -428,7 +428,7 @@ double Graph::bidirectional_dijkstra() {
 
 void Graph::write_in_file(double answer, int algorithm){
     std::ofstream outfile;
-    string folder=algorithm==0?"./data_new/":"./greedy/";
+    string folder=algorithm==0?"./data_final/":"./greedy/";
     string filename = folder + std::to_string(alpha) + "_" + std::to_string(gamma) + "_" + std::to_string(total_nodes);
     outfile.open(filename, std::ios::app);  // Open in append mode
 
